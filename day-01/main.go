@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -36,10 +37,26 @@ func GetBiggestKeyFromMap(inputMap map[int]int) int {
 	return result
 }
 
+func GetSortedValuesFromMap(inputMap map[int]int) []int {
+	values := make([]int, 0, len(inputMap))
+	for _, v := range inputMap {
+		values = append(values, v)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(values)))
+	return values
+}
+
 func main() {
 	lines := strings.Split(puzzle, "\n")
 	calorieElves := BuildMap(lines)
-	maxElf := GetBiggestKeyFromMap(calorieElves)
-	fmt.Printf("Part 1: Elf number %v\n", calorieElves[maxElf])
+	sortedCalories := GetSortedValuesFromMap(calorieElves)
+	fmt.Printf("Part 1: Most calories %v\n", sortedCalories[0])
+
+	max3 := 0
+
+	for i := 0; i < 3; i++ {
+		max3 += sortedCalories[i]
+	}
+	fmt.Printf("Part 2: Most 3 calories %v\n", max3)
 
 }
