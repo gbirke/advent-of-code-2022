@@ -5,19 +5,35 @@ import (
 	"strings"
 )
 
-var scoringTable = map[string]int{
-	"A X": 1 + 3,
-	"A Y": 2 + 6,
-	"A Z": 3 + 0,
-	"B X": 1 + 0,
-	"B Y": 2 + 3,
-	"B Z": 3 + 6,
-	"C X": 1 + 6,
-	"C Y": 2 + 0,
-	"C Z": 3 + 3,
+const Rock = 1
+const Paper = 2
+const Scissors = 3
+
+var naiveScoringTable = map[string]int{
+	"A X": Rock + 3,
+	"A Y": Paper + 6,
+	"A Z": Scissors + 0,
+	"B X": Rock + 0,
+	"B Y": Paper + 3,
+	"B Z": Scissors + 6,
+	"C X": Rock + 6,
+	"C Y": Paper + 0,
+	"C Z": Scissors + 3,
 }
 
-func GetScore(strategy []string) int {
+var cleverScoringTable = map[string]int{
+	"A X": Scissors + 0,
+	"A Y": Rock + 3,
+	"A Z": Paper + 6,
+	"B X": Rock + 0,
+	"B Y": Paper + 3,
+	"B Z": Scissors + 6,
+	"C X": Paper + 0,
+	"C Y": Scissors + 3,
+	"C Z": Rock + 6,
+}
+
+func GetScore(strategy []string, scoringTable map[string]int) int {
 	score := 0
 	for _, v := range strategy {
 		roundScore := scoringTable[v]
@@ -29,8 +45,12 @@ func GetScore(strategy []string) int {
 
 func main() {
 	lines := strings.Split(puzzle, "\n")
-	score := GetScore(lines)
+	score := GetScore(lines, naiveScoringTable)
 
 	fmt.Printf("Part 1: Score %d\n", score)
+
+	score2 := GetScore(lines, cleverScoringTable)
+
+	fmt.Printf("Part 2: Score %d\n", score2)
 
 }
