@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
+
+	"github.com/gbirke/advent-of-code-2022/pkg"
 )
 
 const Rock = 1
@@ -44,7 +45,11 @@ func GetScore(strategy []string, scoringTable map[string]int) int {
 }
 
 func main() {
-	lines := strings.Split(puzzle, "\n")
+	lines, err := pkg.ReadPuzzle()
+	if err != nil {
+		panic(err)
+	}
+
 	score := GetScore(lines, naiveScoringTable)
 
 	fmt.Printf("Part 1: Score %d\n", score)

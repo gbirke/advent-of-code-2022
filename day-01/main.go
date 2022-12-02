@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
-	"strings"
+
+	"github.com/gbirke/advent-of-code-2022/pkg"
 )
 
 func BuildMap(lines []string) map[int]int {
@@ -47,7 +48,11 @@ func GetSortedValuesFromMap(inputMap map[int]int) []int {
 }
 
 func main() {
-	lines := strings.Split(puzzle, "\n")
+	lines, err := pkg.ReadPuzzle()
+	if err != nil {
+		panic(err)
+	}
+
 	calorieElves := BuildMap(lines)
 	sortedCalories := GetSortedValuesFromMap(calorieElves)
 	fmt.Printf("Part 1: Most calories %v\n", sortedCalories[0])
