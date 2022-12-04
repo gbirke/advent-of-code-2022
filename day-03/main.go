@@ -28,13 +28,24 @@ func FindDuplicate(str string) (rune, error) {
 	first := str[0:halfIndex]
 	second := str[halfIndex:]
 
-	seen := make(map[rune]int, halfIndex)
-	for _, c := range first {
-		seen[c] = 1
+	return FindCommonChar([]string{first, second})
+}
+
+func FindCommonChar(str []string) (rune, error) {
+
+	seen := make(map[rune]int)
+	lastIndex := len(str) - 1
+	var foundInAllPrevious int
+	for i := 0; i < lastIndex; i++ {
+		indexBit := 0b1 << i
+		foundInAllPrevious = foundInAllPrevious | indexBit
+		for _, c := range str[i] {
+			seen[c] = seen[c] | indexBit
+		}
 	}
 
-	for _, c := range second {
-		if seen[c] == 1 {
+	for _, c := range str[lastIndex] {
+		if seen[c] == foundInAllPrevious {
 			return c, nil
 		}
 	}
@@ -53,6 +64,19 @@ func CalculatePriority(lines []string) (int, error) {
 	return result, nil
 }
 
+func CalculatePriorityByShared(lines []string) (int, error) {
+	var result int
+	for i := 0; i < len(lines); i += 3 {
+		comparisonSlice := lines[i : i+3]
+		sharedChar, err := FindCommonChar(comparisonSlice)
+		if err != nil {
+			return 0, err
+		}
+		result += CharacterToPriority(sharedChar)
+	}
+	return result, nil
+}
+
 func main() {
 	lines, err := pkg.ReadPuzzle()
 	if err != nil {
@@ -64,4 +88,11 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("Part 1 Priority: %d\n", priority)
+
+	priority, err = CalculatePriorityByShared(lines)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Part 2 Priority: %d\n", priority)
+
 }
