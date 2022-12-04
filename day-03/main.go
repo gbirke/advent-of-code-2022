@@ -33,19 +33,21 @@ func FindDuplicate(str string) (rune, error) {
 
 func FindCommonChar(str []string) (rune, error) {
 
-	seen := make(map[rune]int)
+	seen := make([]int, 52)
 	lastIndex := len(str) - 1
 	var foundInAllPrevious int
 	for i := 0; i < lastIndex; i++ {
 		indexBit := 0b1 << i
 		foundInAllPrevious = foundInAllPrevious | indexBit
 		for _, c := range str[i] {
-			seen[c] = seen[c] | indexBit
+			charIndex := CharacterToPriority(c) - 1
+			seen[charIndex] = seen[charIndex] | indexBit
 		}
 	}
 
 	for _, c := range str[lastIndex] {
-		if seen[c] == foundInAllPrevious {
+		charIndex := CharacterToPriority(c) - 1
+		if seen[charIndex] == foundInAllPrevious {
 			return c, nil
 		}
 	}
