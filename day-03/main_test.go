@@ -29,37 +29,52 @@ func TestCharacterToPriority(t *testing.T) {
 	}
 }
 
-var testData = []struct {
-	in  string
-	out rune
-}{
-	{"vJrwpWtwJgWrhcsFMMfFFhFp", 'p'},
-	{"jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL", 'L'},
-	{"PmmdzqPrVvPwwTWBwg", 'P'},
-	{"wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn", 'v'},
-	{"ttgJtRGJQctTZtZT", 't'},
-	{"CrZsJsPPZsGzwwsLwLmpwMDw", 's'},
+var testInput = []string{
+	"vJrwpWtwJgWrhcsFMMfFFhFp",
+	"jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+	"PmmdzqPrVvPwwTWBwg",
+	"wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+	"ttgJtRGJQctTZtZT",
+	"CrZsJsPPZsGzwwsLwLmpwMDw",
 }
 
 func TestFindDuplicate(t *testing.T) {
-	for _, tt := range testData {
-		t.Run(fmt.Sprintf("Testing %s", tt.in), func(t *testing.T) {
-			actual, err := FindDuplicate(tt.in)
-			if err != nil || tt.out != actual {
-				t.Fatalf(`FindDuplicate(%s) returned %c, expected %c %s`, tt.in, actual, tt.out, err)
+	var expectedChars = []rune{
+		'p',
+		'L',
+		'P',
+		'v',
+		't',
+		's',
+	}
+
+	for idx, tt := range testInput {
+		t.Run(fmt.Sprintf("Testing %s", tt), func(t *testing.T) {
+			actual, err := FindDuplicate(tt)
+			if err != nil || expectedChars[idx] != actual {
+				t.Fatalf(`FindDuplicate(%s) returned %c, expected %c %s`, tt, actual, expectedChars[idx], err)
+			}
+		})
+	}
+}
+
+func TestFindCommonChar(t *testing.T) {
+	expectedChars := map[int]rune{0: 'r', 3: 'Z'}
+	for i := 0; i < len(testInput); i += 3 {
+		comparisonSlice := testInput[i : i+3]
+		t.Run(fmt.Sprintf("Testing %v", comparisonSlice), func(t *testing.T) {
+			actual, err := FindCommonChar(comparisonSlice)
+			if err != nil || expectedChars[i] != actual {
+				t.Fatalf(`TestFindCommonChar(%v) returned %c, expected %c %s`, comparisonSlice, actual, expectedChars[i], err)
 			}
 		})
 	}
 }
 
 func TestCalculayePriority(t *testing.T) {
-	var lines []string
-	for _, td := range testData {
-		lines = append(lines, td.in)
-	}
 	expected := 157
-	actual, err := CalculatePriority(lines)
+	actual, err := CalculatePriority(testInput)
 	if err != nil || expected != actual {
-		t.Fatalf(`CalculatePriority(%v) returned %d, expected %d %s`, lines, actual, expected, err)
+		t.Fatalf(`CalculatePriority(%v) returned %d, expected %d %s`, testInput, actual, expected, err)
 	}
 }
