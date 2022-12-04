@@ -29,6 +29,31 @@ func TestRangeContainment(t *testing.T) {
 	}
 }
 
+func TestRangeOverlap(t *testing.T) {
+	var cases = []struct {
+		in  RangePair
+		out bool
+	}{
+		{RangePair{Range{2, 4}, Range{6, 8}}, false},
+		{RangePair{Range{2, 3}, Range{4, 5}}, false},
+		{RangePair{Range{5, 7}, Range{7, 9}}, true},
+		{RangePair{Range{4, 6}, Range{6, 6}}, true},
+		{RangePair{Range{4, 6}, Range{5, 6}}, true},
+		{RangePair{Range{4, 6}, Range{4, 6}}, true},
+		{RangePair{Range{4, 6}, Range{1, 5}}, true},
+		{RangePair{Range{4, 6}, Range{1, 4}}, true},
+	}
+
+	for _, tt := range cases {
+		t.Run(fmt.Sprintf("Testing %v", tt.in), func(t *testing.T) {
+			actual := tt.in.a.overlaps(tt.in.b)
+			if tt.out != actual {
+				t.Fatalf(`(%+v).overlaps(%+v) returned %t, expected %t`, tt.in.a, tt.in.b, actual, tt.out)
+			}
+		})
+	}
+}
+
 func TestNewRange(t *testing.T) {
 	var cases = []struct {
 		in  string
@@ -68,22 +93,36 @@ func TestNewRangePair(t *testing.T) {
 	}
 }
 
+var testLines = []string{
+	"2-4,6-8",
+	"2-3,4-5",
+	"5-7,7-9",
+	"2-8,3-7",
+	"6-6,4-6",
+	"2-6,4-8",
+}
+
 func TestCountContained(t *testing.T) {
-	lines := []string{
-		"2-4,6-8",
-		"2-3,4-5",
-		"5-7,7-9",
-		"2-8,3-7",
-		"6-6,4-6",
-		"2-6,4-8",
-	}
-	rangePairs, err := LinesToRangePairs(lines)
+	rangePairs, err := LinesToRangePairs(testLines)
 	if err != nil {
-		t.Fatalf("Clould not convert %v to range pairs: %s", lines, err)
+		t.Fatalf("Could not convert %v to range pairs: %s", testLines, err)
 	}
 
 	expected := 2
 	actual := CountContained(rangePairs)
+	if actual != expected {
+		t.Fatalf(`CountContained(%v) returned %d, expected %d`, rangePairs, actual, expected)
+	}
+}
+
+func TestCountOverlaps(t *testing.T) {
+	rangePairs, err := LinesToRangePairs(testLines)
+	if err != nil {
+		t.Fatalf("Could not convert %v to range pairs: %s", testLines, err)
+	}
+
+	expected := 4
+	actual := CountOverlaps(rangePairs)
 	if actual != expected {
 		t.Fatalf(`CountContained(%v) returned %d, expected %d`, rangePairs, actual, expected)
 	}

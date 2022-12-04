@@ -22,6 +22,11 @@ func (r Range) contains(comparisonRange Range) bool {
 		r.upper >= comparisonRange.upper
 }
 
+func (r Range) overlaps(comparisonRange Range) bool {
+	return (r.lower <= comparisonRange.lower && r.upper >= comparisonRange.lower) ||
+		(r.upper >= comparisonRange.upper && r.lower <= comparisonRange.upper)
+}
+
 func NewRange(str string) (*Range, error) {
 	pairs := strings.SplitN(str, "-", 2)
 	lower, err := strconv.Atoi(pairs[0])
@@ -70,6 +75,16 @@ func CountContained(rangePairs []RangePair) int {
 	return result
 }
 
+func CountOverlaps(rangePairs []RangePair) int {
+	var result int
+	for _, rp := range rangePairs {
+		if rp.a.overlaps(rp.b) || rp.b.overlaps(rp.a) {
+			result += 1
+		}
+	}
+	return result
+}
+
 func main() {
 	lines, err := pkg.ReadPuzzle()
 	if err != nil {
@@ -81,5 +96,5 @@ func main() {
 	}
 
 	fmt.Printf("Part 1 contained ranges: %d\n", CountContained(rangePairs))
-
+	fmt.Printf("Part 2 overlapping ranges: %d\n", CountOverlaps(rangePairs))
 }
